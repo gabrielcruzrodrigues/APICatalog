@@ -20,19 +20,29 @@ namespace APICatalog.Controllers
         [HttpGet("products")]
         public ActionResult<IEnumerable<Category>> GetAllCategoriesProducts()
         {
-            return _context.Categories.Include(c => c.Products).ToList();
+            return _context.Categories
+                .Take(10)
+                .AsNoTracking()
+                .Include(c => c.Products)//.Where(c => c.CategoriaId <= 5).ToList();
+                .ToList();
+                
         }
 
         [HttpGet]
         public ActionResult<IEnumerable<Category>> GetAllCategories()
         {
-            return _context.Categories.ToList();
+            return _context.Categories
+                .Take(10)
+                .AsNoTracking()
+                .ToList();
         }
 
         [HttpGet("{id:int}", Name = "GetCategory")]
         public ActionResult<Category> GetCategoryById(int id)
         {
-            var category = _context.Categories.FirstOrDefault(c => c.CategoryId == id);
+            var category = _context.Categories
+                .AsNoTracking()
+                .FirstOrDefault(c => c.CategoryId == id);
 
             if (category is null)
                 return NotFound("Category not found.");
