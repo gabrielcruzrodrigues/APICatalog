@@ -38,7 +38,6 @@ namespace APICatalog.Controllers
                 return NotFound("Product not found.");
 
             return product;
-
         }
 
         [HttpPost]
