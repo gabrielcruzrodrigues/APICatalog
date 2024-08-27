@@ -11,6 +11,10 @@ https://localhost:7215/swagger/index.html
 ```
 https://dotnet.microsoft.com/pt-br/download/dotnet/8.0
 ```
+* Tenha o mysql instalado na sua maquina com as seguintes configurações (Ou altere a string de conexão do projeto):
+```
+user: root | password: 1234 
+```
 * Clone o repositório na sua máquina local:
 ```
 https://github.com/gabrielcruzrodrigues/APICatalog.git
