@@ -29,6 +29,8 @@ public class Product
     public float Amount { get; set; }
     public DateTime CreateAt { get; set; }
     public int CategoryId { get; set; }
+
+    [JsonIgnore]
     public Category? Category { get; set; }
 }
 
