@@ -18,31 +18,38 @@ namespace APICatalog.Controllers
         }
 
         [HttpGet("products")]
-        public ActionResult<IEnumerable<Category>> GetAllCategoriesProducts()
+        public async Task<ActionResult<IEnumerable<Category>>> GetAllCategoriesProductsAsync()
         {
-            return _context.Categories
-                .Take(10)
-                .AsNoTracking()
-                .Include(c => c.Products)//.Where(c => c.CategoriaId <= 5).ToList();
-                .ToList();
-                
+            try
+            {
+                return await _context.Categories
+                    .Take(10)
+                    .AsNoTracking()
+                    .Include(c => c.Products)//.Where(c => c.CategoriaId <= 5).ToList();
+                    .ToListAsync();
+            } 
+            catch(Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    "There was a problem processing your request");
+            }   
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<Category>> GetAllCategories()
+        public async Task<ActionResult<IEnumerable<Category>>> GetAllCategoriesAsync()
         {
-            return _context.Categories
+            return await _context.Categories
                 .Take(10)
                 .AsNoTracking()
-                .ToList();
+                .ToListAsync();
         }
 
-        [HttpGet("{id:int}", Name = "GetCategory")]
-        public ActionResult<Category> GetCategoryById(int id)
+        [HttpGet("{id:int:min(1)}", Name = "GetCategory")]
+        public async Task<ActionResult<Category>> GetCategoryByIdAsync(int id)
         {
-            var category = _context.Categories
+            var category = await _context.Categories
                 .AsNoTracking()
-                .FirstOrDefault(c => c.CategoryId == id);
+                .FirstOrDefaultAsync(c => c.CategoryId == id);
 
             if (category is null)
                 return NotFound("Category not found.");
@@ -51,31 +58,31 @@ namespace APICatalog.Controllers
         }
 
         [HttpPost]
-        public ActionResult Create(Category category)
+        public async Task<ActionResult> CreateAsync(Category category)
         {
             if (category is null)
                 return BadRequest("The category body not be null.");
 
-            _context.Categories.Add(category);
+            await _context.Categories.AddAsync(category);
             _context.SaveChanges();
 
             return new CreatedAtRouteResult("GetCategory", new { id = category.CategoryId }, category);
         }
 
-        [HttpPut("{id:int}")]
-        public ActionResult Update(int id, Category category)
+        [HttpPut("{id:int:min(1)}")]
+        public async Task<ActionResult> UpdateAsync(int id, Category category)
         {
             if (id != category.CategoryId)
                 return BadRequest();
 
             _context.Entry(category).State = EntityState.Modified;
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return Ok();
         }
 
-        [HttpDelete("{id:int}")]
-        public ActionResult Delete(int id)
+        [HttpDelete("{id:int:min(1)}")]
+        public async Task<ActionResult> DeleteAsync(int id)
         {
             var category = _context.Categories.FirstOrDefault(c => c.CategoryId == id);
 
@@ -83,7 +90,7 @@ namespace APICatalog.Controllers
                 return NotFound("Category not found.");
 
             _context.Categories.Remove(category);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return NoContent();
         }
